@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Comentario } from '../../models/comentario';
 import { Avaliacao } from '../../models/avaliacao';
 import { Pessoa } from '../../models/pessoa';
@@ -24,6 +25,11 @@ export class ComentarioForm implements OnInit {
     avaliacoes: Avaliacao[] = [];
     pessoas: Pessoa[] = [];
     isMonitor: boolean;
+    modoEdicao = false;
+    avaliacaoFixa = false;
+    pessoaFixa = false;
+    nomeAvaliacaoContexto = '';
+    nomePessoaContexto = '';
 
     constructor(
         private fb: FormBuilder,
@@ -41,27 +47,41 @@ export class ComentarioForm implements OnInit {
             avaliacaoId: ['', Validators.required],
             userId: ['', Validators.required]
         });
-        if (!this.isMonitor) {
-            const usuarioLogado = this.autenticacaoService.getUsuarioLogado();
-            this.formComentario.patchValue({ userId: usuarioLogado?.id });
-            this.formComentario.get('userId')?.disable();
-        }
     }
 
     ngOnInit(): void {
-        this.carregarAvaliacoes();
-        this.carregarPessoas();
-
         this.id = this.activatedRoute.snapshot.paramMap.get('id') ?? undefined;
+        this.modoEdicao = !!this.id;
+        this.pessoaFixa = this.modoEdicao || !this.isMonitor;
 
-        if (this.id) {
-            this.comentarioService.buscarPorId(this.id).subscribe({
+        if (this.pessoaFixa) {
+            const usuarioLogado = this.autenticacaoService.getUsuarioLogado();
+            this.formComentario.patchValue({ userId: usuarioLogado?.id });
+            this.nomePessoaContexto = usuarioLogado?.nome ?? '';
+        } else {
+            this.carregarPessoas();
+        }
+        this.avaliacaoFixa = this.modoEdicao;
+
+        if (!this.avaliacaoFixa) {
+            this.carregarAvaliacoes();
+        }
+
+        if (this.modoEdicao) {
+            this.formComentario.get('avaliacaoId')?.clearValidators();
+            this.formComentario.get('avaliacaoId')?.updateValueAndValidity();
+
+            this.comentarioService.buscarPorId(this.id!).subscribe({
                 next: (comentario: Comentario) => {
                     this.formComentario.patchValue({
                         texto: comentario.texto,
-                        avaliacaoId: comentario.avaliacaoId,
-                        userId: comentario.userId
+                        avaliacaoId: comentario.avaliacaoId
                     });
+                    if (comentario.avaliacaoId) {
+                        this.avaliacaoService.buscarPorId(String(comentario.avaliacaoId)).subscribe({
+                            next: (av) => { this.nomeAvaliacaoContexto = `Avaliação #${av.id} (nota ${av.nota})`; }
+                        });
+                    }
                 },
                 error: () => {
                     this.mensagemErro = 'Erro ao carregar os dados do comentário.';
@@ -102,7 +122,7 @@ export class ComentarioForm implements OnInit {
             return;
         }
 
-        const comentario: Comentario = this.formComentario.getRawValue();
+        const comentario: Comentario = this.formComentario.value;
         comentario.id = this.id ? Number(this.id) : undefined;
         const avaliacaoId = Number(this.formComentario.get('avaliacaoId')?.value);
 
@@ -110,8 +130,8 @@ export class ComentarioForm implements OnInit {
             next: () => {
                 this.router.navigate([this.isMonitor ? '/comentarios' : '/usuario']);
             },
-            error: () => {
-                this.mensagemErro = 'Erro ao salvar comentário.';
+            error: (err: HttpErrorResponse) => {
+                this.mensagemErro = err.error?.message ?? 'Erro ao salvar comentário.';
             }
         });
     }

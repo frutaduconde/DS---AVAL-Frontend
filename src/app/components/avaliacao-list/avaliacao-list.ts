@@ -6,6 +6,7 @@ import { Jogo } from '../../models/jogo';
 import { AvaliacaoService } from '../../services/avaliacao.service';
 import { PessoaService } from '../../services/pessoa.service';
 import { JogoService } from '../../services/jogo.service';
+import { AutenticacaoService } from '../../services/autenticacao.service';
 
 @Component({
   selector: 'app-avaliacao-list',
@@ -23,8 +24,13 @@ export class AvaliacaoList implements OnInit {
   constructor(
     private avaliacaoService: AvaliacaoService,
     private pessoaService: PessoaService,
-    private jogoService: JogoService
+    private jogoService: JogoService,
+    private autenticacaoService: AutenticacaoService
   ) { }
+
+  get meuId(): number | undefined {
+    return this.autenticacaoService.getUsuarioLogado()?.id;
+  }
 
   ngOnInit(): void { 
     this.pessoaService.listar().subscribe({ next: (dados) => { this.pessoas = dados; } });

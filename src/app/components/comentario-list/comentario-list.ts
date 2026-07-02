@@ -4,6 +4,7 @@ import { Comentario } from '../../models/comentario';
 import { Pessoa } from '../../models/pessoa';
 import { ComentarioService } from '../../services/comentario.service';
 import { PessoaService } from '../../services/pessoa.service';
+import { AutenticacaoService } from '../../services/autenticacao.service';
 
 @Component({
   selector: 'app-comentario-list',
@@ -19,8 +20,13 @@ export class ComentarioList implements OnInit {
 
   constructor(
     private comentarioService: ComentarioService,
-    private pessoaService: PessoaService
+    private pessoaService: PessoaService,
+    private autenticacaoService: AutenticacaoService
   ) { }
+
+  get meuId(): number | undefined {
+    return this.autenticacaoService.getUsuarioLogado()?.id;
+  }
 
   ngOnInit(): void { 
     this.pessoaService.listar().subscribe({ next: (dados) => { this.pessoas = dados; } });

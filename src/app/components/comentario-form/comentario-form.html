@@ -8,7 +8,20 @@
 }
 
 <form [formGroup]="formComentario" (ngSubmit)="salvar()">
+
+    @if (avaliacaoFixa || pessoaFixa) {
+    <div class="alert alert-secondary py-2 mb-3">
+        @if (avaliacaoFixa) {
+        <div><strong>Avaliação:</strong> {{ nomeAvaliacaoContexto || ('#' + formComentario.get('avaliacaoId')?.value) }}</div>
+        }
+        @if (pessoaFixa) {
+        <div><strong>Pessoa:</strong> {{ nomePessoaContexto }}</div>
+        }
+    </div>
+    }
+
     <div class="row">
+        @if (!avaliacaoFixa) {
         <div class="col-md-6 mb-3">
             <label class="form-label">Avaliação</label>
             <select class="form-select" formControlName="avaliacaoId">
@@ -21,8 +34,9 @@
                 <div class="text-danger small">A avaliação é obrigatória.</div>
             }
         </div>
+        }
 
-        @if (isMonitor) {
+        @if (!pessoaFixa) {
         <div class="col-md-6 mb-3">
             <label class="form-label">Pessoa</label>
             <select class="form-select" formControlName="userId">

@@ -8,7 +8,20 @@
 }
 
 <form [formGroup]="formAvaliacao" (ngSubmit)="salvar()">
+
+    @if (jogoFixo || pessoaFixa) {
+    <div class="alert alert-secondary py-2 mb-3">
+        @if (jogoFixo) {
+        <div><strong>Jogo:</strong> {{ nomeJogoContexto || ('#' + formAvaliacao.get('idJogo')?.value) }}</div>
+        }
+        @if (pessoaFixa) {
+        <div><strong>Pessoa:</strong> {{ nomePessoaContexto }}</div>
+        }
+    </div>
+    }
+
     <div class="row">
+        @if (!jogoFixo) {
         <div class="col-md-6 mb-3">
             <label class="form-label">Jogo</label>
             <select class="form-select" formControlName="idJogo">
@@ -20,12 +33,10 @@
             @if (validarCampo('idJogo', 'required')) {
                 <div class="text-danger small">O jogo é obrigatório.</div>
             }
-            @if (id) {
-                <div class="text-muted small">O jogo de uma avaliação existente não pode ser alterado.</div>
-            }
         </div>
+        }
 
-        @if (isMonitor) {
+        @if (!pessoaFixa) {
         <div class="col-md-6 mb-3">
             <label class="form-label">Pessoa</label>
             <select class="form-select" formControlName="userId">

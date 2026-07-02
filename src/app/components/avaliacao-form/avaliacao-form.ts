@@ -26,6 +26,11 @@ export class AvaliacaoForm implements OnInit {
     pessoas: Pessoa[] = [];
     isMonitor: boolean;
     origemJogoId?: string;
+    modoEdicao = false;
+    jogoFixo = false;
+    pessoaFixa = false;
+    nomeJogoContexto = '';
+    nomePessoaContexto = '';
 
     constructor(
         private fb: FormBuilder,
@@ -44,38 +49,50 @@ export class AvaliacaoForm implements OnInit {
             idJogo: ['', Validators.required],
             userId: ['', Validators.required]
         });
-
-        // Usuário comum sempre avalia como ele mesmo, o campo não é uma escolha.
-        if (!this.isMonitor) {
-            const usuarioLogado = this.autenticacaoService.getUsuarioLogado();
-            this.formAvaliacao.patchValue({ userId: usuarioLogado?.id });
-            this.formAvaliacao.get('userId')?.disable();
-        }
     }
 
     ngOnInit(): void {
-        this.carregarJogos();
-        this.carregarPessoas();
-
         this.id = this.activatedRoute.snapshot.paramMap.get('id') ?? undefined;
         this.origemJogoId = this.activatedRoute.snapshot.queryParamMap.get('idJogo') ?? undefined;
+        this.modoEdicao = !!this.id;
+        this.pessoaFixa = this.modoEdicao || !this.isMonitor;
 
-        if (this.origemJogoId && !this.id) {
-            this.formAvaliacao.patchValue({ idJogo: this.origemJogoId });
-            this.formAvaliacao.get('idJogo')?.disable();
+        if (this.pessoaFixa) {
+            const usuarioLogado = this.autenticacaoService.getUsuarioLogado();
+            this.formAvaliacao.patchValue({ userId: usuarioLogado?.id });
+            this.nomePessoaContexto = usuarioLogado?.nome ?? '';
+        } else {
+            this.carregarPessoas();
         }
+        this.jogoFixo = this.modoEdicao || !!this.origemJogoId;
 
-        if (this.id) {
+        if (this.jogoFixo) {
             this.formAvaliacao.get('idJogo')?.clearValidators();
             this.formAvaliacao.get('idJogo')?.updateValueAndValidity();
-            this.formAvaliacao.get('idJogo')?.disable();
-            this.avaliacaoService.buscarPorId(this.id).subscribe({
+        } else {
+            this.carregarJogos();
+        }
+
+        if (this.origemJogoId && !this.modoEdicao) {
+            this.formAvaliacao.patchValue({ idJogo: this.origemJogoId });
+            this.jogoService.buscarPorId(this.origemJogoId).subscribe({
+                next: (jogo) => { this.nomeJogoContexto = jogo.nome ?? `Jogo #${this.origemJogoId}`; }
+            });
+        }
+
+        if (this.modoEdicao) {
+            this.avaliacaoService.buscarPorId(this.id!).subscribe({
                 next: (avaliacao: Avaliacao) => {
                     this.formAvaliacao.patchValue({
                         nota: avaliacao.nota,
                         estado: avaliacao.estado,
-                        userId: avaliacao.userId
+                        idJogo: avaliacao.jogoId
                     });
+                    if (avaliacao.jogoId) {
+                        this.jogoService.buscarPorId(String(avaliacao.jogoId)).subscribe({
+                            next: (jogo) => { this.nomeJogoContexto = jogo.nome ?? `Jogo #${avaliacao.jogoId}`; }
+                        });
+                    }
                 },
                 error: () => {
                     this.mensagemErro = 'Erro ao carregar os dados da avaliação.';
@@ -83,6 +100,7 @@ export class AvaliacaoForm implements OnInit {
             });
         }
     }
+
     carregarJogos(): void {
         this.jogoService.listar().subscribe({
             next: (dados: Jogo[]) => { 
@@ -111,7 +129,7 @@ export class AvaliacaoForm implements OnInit {
             return;
         }
 
-        const avaliacao: Avaliacao = this.formAvaliacao.getRawValue();
+        const avaliacao: Avaliacao = this.formAvaliacao.value;
         avaliacao.id = this.id ? Number(this.id) : undefined;
         const idJogo = Number(this.formAvaliacao.get('idJogo')?.value);
 
