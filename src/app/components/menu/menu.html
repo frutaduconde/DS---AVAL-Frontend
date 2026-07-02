@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" routerLink="/biblioteca">A-VAL</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+            aria-controls="menuPrincipal" aria-expanded="false" aria-label="Alternar navegação">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/biblioteca">Jogos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/usuario">Minha Área</a>
+                </li>
+                @if (isMonitor) {
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/jogos">Gerenciar Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/avaliacoes">Avaliações</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/comentarios">Comentários</a>
+                </li>
+                }
+            </ul>
+            <ul class="navbar-nav align-items-center">
+                @if (usuario) {
+                <li class="nav-item">
+                    <span class="nav-link text-white-50">{{ usuario.nome }} ({{ usuario.ator }})</span>
+                </li>
+                }
+                <li class="nav-item">
+                    <button class="btn btn-outline-light btn-sm" (click)="sair()">Sair</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

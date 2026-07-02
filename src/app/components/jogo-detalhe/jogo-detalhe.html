@@ -1,0 +1,78 @@
+@if (carregando) {
+<div class="text-center py-5">
+    <div class="spinner-border text-light" role="status"></div>
+</div>
+}
+
+@if (mensagemErro) {
+<div class="alert alert-danger">{{ mensagemErro }}</div>
+}
+
+@if (jogo && !carregando) {
+
+<div class="row mb-4">
+    <div class="col-4 col-md-3 col-lg-2">
+        <img [src]="jogo.urlCapa || capaPadrao" class="img-fluid rounded shadow" alt="{{ jogo.nome }}">
+    </div>
+    <div class="col-8 col-md-9 col-lg-10">
+        <h2 class="mb-1">{{ jogo.nome }}</h2>
+        <div class="mb-2">
+            <span class="badge bg-primary fs-6">★ {{ jogo.notaGeral?.toFixed(1) ?? '—' }}</span>
+        </div>
+        <ul class="list-unstyled text-muted small mb-3">
+            <li><strong>Lançado em:</strong> {{ jogo.dtLancamento | slice:0:10 }}</li>
+            <li><strong>Desenvolvedora:</strong> {{ desenvolvedor?.nome ?? '—' }}</li>
+            <li><strong>Gênero:</strong> {{ jogo.genero }}</li>
+        </ul>
+
+        @if (!jaAvaliei) {
+        <a class="btn btn-success" [routerLink]="['/avaliacoes/cadastrar']" [queryParams]="{ idJogo: jogo.id }">Avaliar</a>
+        } @else if (minhaAvaliacao) {
+        <a class="btn btn-outline-warning" [routerLink]="['/avaliacoes/alterar', minhaAvaliacao.id]">Editar minha avaliação</a>
+        <button class="btn btn-outline-danger ms-2" (click)="excluirAvaliacao(minhaAvaliacao.id!)">Excluir minha avaliação</button>
+        }
+    </div>
+</div>
+
+<h4 class="mb-3">Reviews</h4>
+
+@for (av of avaliacoes; track av.id) {
+<div class="card bg-dark border-secondary mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <strong class="text-white">{{ '@' }}{{ av.nomeUsuario }}</strong>
+                <span class="badge bg-warning text-dark ms-2">★ {{ av.nota }}</span>
+                <span class="badge ms-1" [class.bg-success]="av.estado === 'COMPLETO'" [class.bg-secondary]="av.estado === 'INCOMPLETO'">
+                    {{ av.estado === 'COMPLETO' ? 'Completo' : 'Incompleto' }}
+                </span>
+            </div>
+        </div>
+
+        @for (com of av.comentarios; track com.id) {
+        <div class="bg-black bg-opacity-25 rounded p-2 mb-2">
+            <span class="text-muted small">{{ '@' }}{{ com.nomeUsuario }}:</span>
+            <span class="text-white-50">{{ com.texto }}</span>
+        </div>
+        } @empty {
+        <p class="text-muted small fst-italic mb-2">Sem comentários ainda.</p>
+        }
+
+        @if (usuarioLogado) {
+        <div class="input-group input-group-sm mt-2">
+            <input
+                type="text"
+                class="form-control"
+                placeholder="Adicionar um comentário..."
+                [(ngModel)]="av.novoComentario"
+                (keyup.enter)="enviarComentario(av)">
+            <button class="btn btn-outline-light" type="button" (click)="enviarComentario(av)">Enviar</button>
+        </div>
+        }
+    </div>
+</div>
+} @empty {
+<p class="text-muted">Nenhuma avaliação ainda. Seja o primeiro a avaliar este jogo!</p>
+}
+
+}

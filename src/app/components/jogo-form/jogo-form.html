@@ -1,0 +1,68 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Jogo</h2>
+    <a class="btn btn-secondary" routerLink="/jogos">Voltar</a>
+</div>
+
+@if (mensagemErro) {
+<div class="alert alert-danger">{{ mensagemErro }}</div>
+}
+
+<form [formGroup]="formJogo" (ngSubmit)="salvar()">
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" class="form-control" formControlName="nmJogo">
+            @if (validarCampo('nmJogo', 'required')) {
+                <div class="text-danger small">O título é obrigatório.</div>
+            }
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Data de Lançamento</label>
+            <input type="date" class="form-control" formControlName="dtLancamento">
+            @if (validarCampo('dtLancamento', 'required')) {
+                <div class="text-danger small">A data é obrigatória.</div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <label class="form-label">URL da capa (imagem)</label>
+            <input type="text" class="form-control" formControlName="urlCapa" placeholder="https://...">
+            <div class="form-text">Cole o link de uma imagem para a capa do jogo. Se deixar em branco, será usada uma capa genérica.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Gênero</label>
+            <select class="form-select" formControlName="genero">
+                <option value="">Selecione um gênero</option>
+                @for (genero of generos; track genero) {
+                    <option [value]="genero">{{ genero }}</option>
+                }
+            </select>
+            @if (validarCampo('genero', 'required')) {
+                <div class="text-danger small">O gênero é obrigatório.</div>
+            }
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Desenvolvedor</label>
+            <select class="form-select" formControlName="devId">
+                <option value="">Selecione um desenvolvedor</option>
+                @for (dev of desenvolvedores; track dev.id) {
+                    <option [value]="dev.id">{{ dev.nome }}</option>
+                }
+            </select>
+            @if (validarCampo('devId', 'required')) {
+                <div class="text-danger small">O desenvolvedor é obrigatório.</div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success" [disabled]="formJogo.invalid">Salvar</button>
+    </div>
+</form>

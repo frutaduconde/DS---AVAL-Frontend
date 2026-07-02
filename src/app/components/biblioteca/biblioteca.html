@@ -1,0 +1,34 @@
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Catálogo de Jogos</h2>
+    <input
+        type="text"
+        class="form-control"
+        style="max-width: 300px;"
+        placeholder="Buscar jogo..."
+        [(ngModel)]="termoBusca"
+        (ngModelChange)="filtrar()">
+</div>
+
+@if (mensagemErro) {
+<div class="alert alert-danger">{{ mensagemErro }}</div>
+}
+
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+    @for (jogo of jogosFiltrados; track jogo.id) {
+    <div class="col">
+        <a [routerLink]="['/biblioteca', jogo.id]" class="text-decoration-none">
+            <div class="card h-100 bg-dark border-secondary jogo-card">
+                <img [src]="jogo.urlCapa || capaPadrao" class="card-img-top jogo-capa" alt="{{ jogo.nome }}">
+                <div class="card-body p-2">
+                    <p class="card-text text-white small mb-1 text-truncate">{{ jogo.nome }}</p>
+                    <span class="badge bg-primary">★ {{ jogo.notaGeral?.toFixed(1) ?? '—' }}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    } @empty {
+    <div class="col-12">
+        <p class="text-center text-muted">Nenhum jogo encontrado.</p>
+    </div>
+    }
+</div>

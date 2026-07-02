@@ -1,0 +1,15 @@
+.jogo-card {
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.jogo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.jogo-capa {
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}

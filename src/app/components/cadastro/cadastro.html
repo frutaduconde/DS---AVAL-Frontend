@@ -1,0 +1,72 @@
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="card shadow-sm my-4" style="width: 100%; max-width: 440px;">
+        <div class="card-body p-4">
+            <h2 class="text-center mb-1">A-VAL</h2>
+            <p class="text-center text-muted mb-4">Criar uma nova conta</p>
+
+            @if (mensagemErro) {
+            <div class="alert alert-danger">{{ mensagemErro }}</div>
+            }
+
+            @if (mensagemSucesso) {
+            <div class="alert alert-success">{{ mensagemSucesso }}</div>
+            }
+
+            <form [formGroup]="formCadastro" (ngSubmit)="cadastrar()">
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <input type="text" class="form-control" formControlName="nome">
+                    @if (validarCampo('nome', 'required')) {
+                        <div class="text-danger small">O nome é obrigatório.</div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">E-mail</label>
+                    <input type="email" class="form-control" formControlName="email">
+                    @if (validarCampo('email', 'required')) {
+                        <div class="text-danger small">O e-mail é obrigatório.</div>
+                    }
+                    @if (validarCampo('email', 'email')) {
+                        <div class="text-danger small">Informe um e-mail válido.</div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">CPF</label>
+                    <input type="text" class="form-control" formControlName="cpf" placeholder="Somente números">
+                    @if (validarCampo('cpf', 'required')) {
+                        <div class="text-danger small">O CPF é obrigatório.</div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <input type="password" class="form-control" formControlName="senha">
+                    @if (validarCampo('senha', 'required')) {
+                        <div class="text-danger small">A senha é obrigatória.</div>
+                    }
+                    @if (validarCampo('senha', 'minlength')) {
+                        <div class="text-danger small">A senha deve ter pelo menos 4 caracteres.</div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirmar senha</label>
+                    <input type="password" class="form-control" formControlName="confirmarSenha">
+                    @if (senhasDiferentes()) {
+                        <div class="text-danger small">As senhas não coincidem.</div>
+                    }
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-success" [disabled]="formCadastro.invalid">Criar conta</button>
+                </div>
+
+                <p class="text-center mb-0">
+                    Já tem uma conta? <a routerLink="/login">Entrar</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>

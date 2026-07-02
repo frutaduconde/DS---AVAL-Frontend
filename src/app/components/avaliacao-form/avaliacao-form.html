@@ -1,0 +1,67 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Avaliação</h2>
+    <a class="btn btn-secondary" [routerLink]="origemJogoId ? ['/biblioteca', origemJogoId] : (isMonitor ? '/avaliacoes' : '/usuario')">Voltar</a>
+</div>
+
+@if (mensagemErro) {
+<div class="alert alert-danger">{{ mensagemErro }}</div>
+}
+
+<form [formGroup]="formAvaliacao" (ngSubmit)="salvar()">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Jogo</label>
+            <select class="form-select" formControlName="idJogo">
+                <option value="">Selecione um jogo</option>
+                @for (jogo of jogos; track jogo.id) {
+                <option [value]="jogo.id">{{ jogo.nome }}</option>
+                }
+            </select>
+            @if (validarCampo('idJogo', 'required')) {
+                <div class="text-danger small">O jogo é obrigatório.</div>
+            }
+            @if (id) {
+                <div class="text-muted small">O jogo de uma avaliação existente não pode ser alterado.</div>
+            }
+        </div>
+
+        @if (isMonitor) {
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Pessoa</label>
+            <select class="form-select" formControlName="userId">
+                <option value="">Selecione uma pessoa</option>
+                @for (pessoa of pessoas; track pessoa.id) {
+                    <option [value]="pessoa.id">{{ pessoa.nome }}</option>
+                }
+            </select>
+            @if (validarCampo('userId', 'required')) {
+                <div class="text-danger small">A pessoa é obrigatória.</div>
+            }
+        </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Nota (0 a 10)</label>
+            <input type="number" class="form-control" formControlName="nota" min="0" max="10" step="0.1">
+            @if (validarCampo('nota', 'required')) {
+                <div class="text-danger small">A nota é obrigatória.</div>
+            }
+            @if (validarCampo('nota', 'min') || validarCampo('nota', 'max')) {
+                <div class="text-danger small">A nota deve ser entre 0 e 10.</div>
+            }
+        </div>
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" formControlName="estado">
+                <option value="INCOMPLETO">Incompleto</option>
+                <option value="COMPLETO">Completo</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success" [disabled]="formAvaliacao.invalid">Salvar</button>
+    </div>
+</form>

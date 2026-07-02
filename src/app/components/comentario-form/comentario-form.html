@@ -1,0 +1,57 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Comentário</h2>
+    <a class="btn btn-secondary" [routerLink]="isMonitor ? '/comentarios' : '/usuario'">Voltar</a>
+</div>
+
+@if (mensagemErro) {
+<div class="alert alert-danger">{{ mensagemErro }}</div>
+}
+
+<form [formGroup]="formComentario" (ngSubmit)="salvar()">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Avaliação</label>
+            <select class="form-select" formControlName="avaliacaoId">
+                <option value="">Selecione uma avaliação</option>
+                @for (av of avaliacoes; track av.id) {
+                    <option [value]="av.id">{{ av.id }} — {{ nomePessoa(av.userId) }} ({{ av.nota }})</option>
+                }
+            </select>
+            @if (validarCampo('avaliacaoId', 'required')) {
+                <div class="text-danger small">A avaliação é obrigatória.</div>
+            }
+        </div>
+
+        @if (isMonitor) {
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Pessoa</label>
+            <select class="form-select" formControlName="userId">
+                <option value="">Selecione uma pessoa</option>
+                @for (pessoa of pessoas; track pessoa.id) {
+                    <option [value]="pessoa.id">{{ pessoa.nome }}</option>
+                }
+            </select>
+            @if (validarCampo('userId', 'required')) {
+                <div class="text-danger small">A pessoa é obrigatória.</div>
+            }
+        </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <label class="form-label">Comentário</label>
+            <textarea class="form-control" rows="4" formControlName="texto"></textarea>
+            @if (validarCampo('texto', 'required')) {
+                <div class="text-danger small">O comentário é obrigatório.</div>
+            }
+            @if (validarCampo('texto', 'maxlength')) {
+                <div class="text-danger small">Máximo de 500 caracteres.</div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success" [disabled]="formComentario.invalid">Salvar</button>
+    </div>
+</form>
