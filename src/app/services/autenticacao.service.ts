@@ -11,7 +11,7 @@ const CHAVE_STORAGE = 'aval_usuario_logado';
 })
 export class AutenticacaoService {
 
-  private readonly apiUrl = 'http://localhost:8080/auth';
+  private readonly apiUrl = 'https://ds-aval.onrender.com/auth';
   private usuarioAtualSubject = new BehaviorSubject<Pessoa | null>(this.carregarUsuarioSalvo());
   usuarioAtual$ = this.usuarioAtualSubject.asObservable();
 

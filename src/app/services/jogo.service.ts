@@ -8,7 +8,7 @@ import { Jogo } from '../models/jogo';
 })
 export class JogoService {
   
-  private readonly apiUrl = 'http://localhost:8080/jogos';
+  private readonly apiUrl = 'https://ds-aval.onrender.com/jogos';
 
   constructor(private http: HttpClient) { }
 

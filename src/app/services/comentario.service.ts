@@ -8,7 +8,7 @@ import { Comentario } from '../models/comentario';
 })
 export class ComentarioService {
   
-  private readonly apiUrl = 'http://localhost:8080/comentarios';
+  private readonly apiUrl = 'https://ds-aval.onrender.com/comentarios';
 
   constructor(private http: HttpClient) { }
 

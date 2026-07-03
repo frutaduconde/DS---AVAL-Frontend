@@ -8,7 +8,7 @@ import { Avaliacao } from '../models/avaliacao';
 })
 export class AvaliacaoService {
   
-  private readonly apiUrl = 'http://localhost:8080/avaliacoes';
+  private readonly apiUrl = 'https://ds-aval.onrender.com/avaliacoes';
 
   constructor(private http: HttpClient) { }
 

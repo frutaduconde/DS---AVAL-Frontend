@@ -7,7 +7,7 @@ import { Pessoa } from '../models/pessoa';
   providedIn: 'root' 
 })
 export class PessoaService {
-  private readonly apiUrl = 'http://localhost:8080/pessoas';
+  private readonly apiUrl = 'https://ds-aval.onrender.com/pessoas';
   constructor(private http: HttpClient) { }
 
   listar(): Observable<Pessoa[]> {
